@@ -11,7 +11,7 @@ class Manager extends Employee{
     }
 
     getMember(){
-        return Manager
+        return 'Manager'
     }
 }
 

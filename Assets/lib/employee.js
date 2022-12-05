@@ -18,7 +18,7 @@ class TeamMember{
     }
 
     getMember(){
-        return TeamMember
+        return 'TeamMember'
     }
 }
 
