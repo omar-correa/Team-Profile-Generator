@@ -1,53 +1,36 @@
 const fs = require('fs')
 const inquirer = require('inquirer')
+const Manager = require('./manager')
+const Engineer = require('./engineer')
+const Intern = require('./intern')
+const path = require('path')
+const teamMembers = []
 
-inquirer.prompt([
+const teamManager = () =>{
+    return inquirer.prompt([
     {
         name: "name",
-        type:
-        message:
+        type: "input",
+        message: "What's your name?"
     },
     {
         name: "id",
-        type:
-        message:
+        type: "input",
+        message: "what's your employee ID"
     },
     {
         name: "email",
-        type:
-        message:
+        type: "input",
+        message: "What's your email?"
     },
     {
-        name: "office"
-        type: 
-        message:
+        name: "officeNum",
+        type: "input",
+        message: "what's your office number?"
     },
 ]).then(response => {
-    const html = `<html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta http-equiv="X-UA-Compatible" content="ie=edge">
-      <title>Portfolio</title>
-      <link rel="stylesheet" href="./style.css">
-    </head>
-    <body>
-      <main>
-          <h1>Portfolio</h1> 
-          <div><h3>${response.name}</h3></div>
-          <div><h3>${response.location}</h3></div>
-          <div><h3>${response.bio}</h3></div>
-          <div><h3>${response.linkedin}</h3></div>
-          <div><h3>${response.github}</h3></div>
-        </main>
-        <script src="index.js"></script>
-    </body>
-    </html>`
-    fs.writeFile("index.html", html, error => {
-        if (error) {
-            console.log("error")
-        } else {
-            console.log("response saved successfully")
-        }
-    })
+    const manager = new Manager(response.name,response.id,response.email,response.officeNum)
+    teamMembers.push(manager)
+    
 })
+};
