@@ -17,7 +17,7 @@ class TeamMember{
         return this.email
     }
 
-    getMember(){
+    getRole(){
         return 'TeamMember'
     }
 }

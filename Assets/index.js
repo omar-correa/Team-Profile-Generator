@@ -1,93 +1,138 @@
-const finalTeam = (team) => {
-    console.log(team)
-    const htmlPage = [];
-    const generateManager = manager => {
-        console.log(manager);
-        const managerHtml = ` 
-        <div class="card" style="width: 15rem;">
-            <div class="card-header">
-           ${manager.name} <br/>
-           <i class="fa-sharp fa-solid fa-mug-saucer"></i>Manager</div>
-           <ul class="list-group">
-            <li class="list-group-item">ID: ${manager.id}</li>
-            <li class="list-group-item">Email: <span id="email"><a href="mailto:${manager.email}">${manager.email}</a></span></li>
-            <li class="list-group-item">Office Number: ${manager.officeNum}</li>
-            </ul>
-        </div>
-        `;
-        htmlPage.push(managerHtml);
-    }
-    const generateIntern = intern => {
-        console.log(intern);
-        const internHtml = ` 
-        <div class="card" style="width: 15rem;">
-            <div class="card-header">
-           ${intern.name} <br/>
-           <i class="fa-regular fa-graduation-cap"></i>Intern</div>
-           <ul class="list-group">
-            <li class="list-group-item">Employee ID: ${intern.id}</li>
-            <li class="list-group-item">Email: <span id="email"><a href="mailto:${intern.email}">${intern.email}</a></span></li>
-            <li class="list-group-item">School: ${intern.school}</li>
-            </ul>
-        </div>
-        `
-        htmlPage.push(internHtml)
-    }
+const fs = require('fs')
+const inquirer = require('inquirer')
+// immported classes, except for employee because it is the parent class
+const Manager = require('./lib/manager')
+const Engineer = require('./lib/engineer')
+const Intern = require('./lib/intern')
+const path = require('path')
+const OUTPUT_DIR = path.resolve(__dirname,"output")
+const outputPath = path.join(OUTPUT_DIR,"team.html")
+const teamMembers = []
 
-    const generateEngineer = engineer => {
-        console.log(engineer);
-        const engineerHtml = ` 
-        <div class="card" style="width: 15rem;">
-            <div class="card-header">
-           ${engineer.name} <br/>
-           <i class="fa-sharp fa-solid fa-glasses"></i>Engineer</div>
-           <ul class="list-group">
-            <li class="list-group-item">Employee ID: ${engineer.id}</li>
-            <li class="list-group-item">Email: <span id="email"><a href="mailto:${engineer.email}">${engineer.email}</a></span></li>
-            <li class="list-group-item">Github Username: <a target="_blank" href="https://github.com/${engineer.github}">${engineer.github}</a></li>
-            </ul>
-        </div>
-        `
-        htmlPage.push(engineerHtml)
-    }
+const team = require('./src/info')
 
-    for (let i = 0; i < team.length; i++) {
-        if (team[i].getMember() === "Manager") {
-            generateManager(team[i]);
-        }
-        if (team[i].getMember() === "Engineer") {
-            generateEngineer(team[i]);
-        }
-        if (team[i].getMember() === "Intern") {
-            generateIntern(team[i]);
-        }
-    }
+// first thing that gets prompted on the console
+const teamManager = () => {
+    return inquirer.prompt([
+        {
+            name: "name",
+            type: "input",
+            message: "What's your name?"
+        },
+        {
+            name: "id",
+            type: "input",
+            message: "what's your employee ID"
+        },
+        {
+            name: "email",
+            type: "input",
+            message: "What's your email?"
+        },
+        {
+            name: "officeNum",
+            type: "input",
+            message: "what's your office number?"
+        },
+    ]).then(response => {
+        console.log(response)
+        const manager = new Manager(response.name, response.id, response.email, response.officeNum)
+        teamMembers.push(manager)
+        prompts()
+    })
+};
 
-    return htmlPage.join('');
+// after manager info is logged, user chooses to add an intern, add an engineer, or to finish building their team of employees
+const prompts = () => {
+    return inquirer.prompt([
+        {
+            name: 'menu',
+            type: 'list',
+            message: 'Is there anyone you would like to add to your team?',
+            choices: ['Add an intern to your team', 'Add an engineer to your team', 'Finish creating your team']
+        }
+    ])
+        .then(userInput => {
+            if (userInput.menu) {
+                if (userInput.menu === 'Add an intern to your team') {
+                    addIntern()
+                }
+                else if (userInput.menu === 'Add an engineer to your team') {
+                    addEngineer()
+                }
+                else if (userInput.menu === 'Finish creating your team') {
+                    finalTeam()
+                }
+            }
+        })
 }
-module.exports = team => {
-
-    return `
-    <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-    <script src="https://kit.fontawesome.com/b15be11c0c.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="../dist/style.css" />
-    <title> Your Team Profile</title>
-</head>
-<body>
-    <header>
-    <h1> My Team </h1>
-    </header>
-
-    <main> ${finalTeam(team)} </main>
-     
-</body>
-</html>
-    `;
+// code for user to log their intern info
+const addIntern = ()=>{
+    return inquirer.prompt([
+        {
+            name: 'name',
+            type: 'input',
+            question: "What's your intern's name?"
+        },
+        {
+            name: 'id',
+            type: 'input',
+            question: "What's your intern's id?"
+        },
+        {
+            name: 'email',
+            type: 'input',
+            question: "What's your intern's email?"
+        },
+        {
+            name: 'school',
+            type: 'input',
+            question: "What school is your intern enrolled in?"
+        }
+    ]).then(response =>{
+        console.log(response)
+        const intern = new Intern(response.name, response.id, response.email, response.school)
+        teamMembers.push(intern)
+        prompts()
+    })
 }
+
+//code for user to log their engineer info
+const addEngineer = () =>{
+    return inquirer.prompt([
+        {
+            name: 'name',
+            type: 'input',
+            question: "What's your engineer's name?"
+        },
+        {
+            name: 'id',
+            type: 'input',
+            question: "What's your engineer's id?"
+        },
+        {
+            name: 'email',
+            type: 'input',
+            question: "What's your engineer's email?"
+        },
+        {
+            name: 'github',
+            type: 'input',
+            question: "What's your engineer's GitHub?"
+        }
+    ]).then(response => {
+        console.log(response)
+        const engineer = new Engineer(response.name, response.id, response.email, response.github)
+        teamMembers.push(engineer)
+        prompts()
+    })
+}
+
+const finalTeam = () =>{
+    if(!fs.existsSync(OUTPUT_DIR)){
+        fs.mkdirSync(OUTPUT_DIR)
+    }
+    fs.writeFileSync(outputPath,team(teamMembers))
+}
+
+teamManager()

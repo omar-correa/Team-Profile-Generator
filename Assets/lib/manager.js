@@ -10,7 +10,7 @@ class Manager extends Employee{
         return this.officeNum
     }
 
-    getMember(){
+    getRole(){
         return 'Manager'
     }
 }
